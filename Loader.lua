@@ -1,130 +1,94 @@
--- 🌸 Sakura Hub | Loader C+D (Delta Compatible)
--- Get Key + Save Key + Whitelist + Obfuscation Light
+-- 🌸 Sakura Hub Loader | Money Version
+-- Delta Compatible
 
-local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
-local LP = Players.LocalPlayer
+local Players = game:GetService("Players")
+local plr = Players.LocalPlayer
 
 -- ===== CONFIG =====
-local HUB_URL = "https://raw.githubusercontent.com/SakuraChann268/SakuraHub/refs/heads/main/SakuraHubs.lua"
-
--- LINK GET KEY (đổi link TikTok / rút gọn của em)
-local GET_KEY_URL = "https://link-to-tiktok-or-shortlink"
-
--- KEY LIST (em tự thêm key)
+local KEY_LINK = "https://linkvertise.com/3005759/rml6R6kJW5Tc"
 local VALID_KEYS = {
-    ["SAKURA-61062162"] = true,
-    ["SAKURA-456"] = true,
+    ["SAKURA-61062162"] = true
 }
 
--- WHITELIST USERID (tuỳ chọn)
-local WHITELIST = {
-    [LP.UserId] = true -- cho chính em
-}
+local SAVE_FILE = "SakuraHub/key.json"
 
--- ===== SAVE KEY =====
-local KEY_FILE = "SakuraKey_"..LP.UserId..".json"
+-- ===== SAVE / LOAD KEY =====
+pcall(function()
+    if not isfolder("SakuraHub") then makefolder("SakuraHub") end
+end)
 
-local function saveKey(key)
-    writefile(KEY_FILE, HttpService:JSONEncode({key=key}))
+local function saveKey(k)
+    writefile(SAVE_FILE, HttpService:JSONEncode({key=k}))
 end
 
-local function loadSavedKey()
-    if isfile(KEY_FILE) then
-        local data = HttpService:JSONDecode(readfile(KEY_FILE))
-        return data.key
+local function loadKey()
+    if isfile(SAVE_FILE) then
+        return HttpService:JSONDecode(readfile(SAVE_FILE)).key
     end
 end
 
 -- ===== UI =====
-pcall(function() LP.PlayerGui:FindFirstChild("SakuraLoader"):Destroy() end)
-
-local gui = Instance.new("ScreenGui", LP.PlayerGui)
-gui.Name = "SakuraLoader"
+local gui = Instance.new("ScreenGui", plr.PlayerGui)
+gui.Name = "SakuraKeyUI"
 gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.fromOffset(300,180)
-frame.Position = UDim2.fromScale(0.5,0.5)
-frame.AnchorPoint = Vector2.new(0.5,0.5)
-frame.BackgroundColor3 = Color3.fromRGB(30,30,40)
-frame.BorderSizePixel = 0
+frame.Size = UDim2.fromScale(0.75,0.45)
+frame.Position = UDim2.fromScale(0.125,0.28)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,35)
 frame.Active = true
 frame.Draggable = true
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1,0,0,40)
-title.Text = "🌸 Sakura Hub Loader"
-title.TextSize = 18
-title.TextColor3 = Color3.fromRGB(255,150,200)
+title.Text = "🌸 Sakura Hub – Get Key"
+title.TextColor3 = Color3.fromRGB(255,150,190)
 title.BackgroundTransparency = 1
+title.TextSize = 20
 
 local box = Instance.new("TextBox", frame)
-box.Position = UDim2.new(0.1,0,0.35,0)
-box.Size = UDim2.new(0.8,0,0,32)
-box.PlaceholderText = "Enter Key Here"
+box.Size = UDim2.new(0.9,0,0,40)
+box.Position = UDim2.new(0.05,0,0.35,0)
+box.PlaceholderText = "Nhập KEY vào đây"
 box.Text = ""
-box.TextSize = 14
-box.BackgroundColor3 = Color3.fromRGB(45,45,60)
-box.TextColor3 = Color3.new(1,1,1)
-box.BorderSizePixel = 0
-
-local status = Instance.new("TextLabel", frame)
-status.Position = UDim2.new(0,0,0.6,0)
-status.Size = UDim2.new(1,0,0,20)
-status.Text = ""
-status.TextSize = 13
-status.TextColor3 = Color3.fromRGB(200,200,200)
-status.BackgroundTransparency = 1
-
-local btnLoad = Instance.new("TextButton", frame)
-btnLoad.Position = UDim2.new(0.1,0,0.75,0)
-btnLoad.Size = UDim2.new(0.35,0,0,32)
-btnLoad.Text = "LOAD"
-btnLoad.TextSize = 14
-btnLoad.BackgroundColor3 = Color3.fromRGB(120,80,150)
-btnLoad.TextColor3 = Color3.new(1,1,1)
-btnLoad.BorderSizePixel = 0
+box.TextSize = 16
 
 local btnGet = Instance.new("TextButton", frame)
-btnGet.Position = UDim2.new(0.55,0,0.75,0)
-btnGet.Size = UDim2.new(0.35,0,0,32)
-btnGet.Text = "GET KEY"
-btnGet.TextSize = 14
-btnGet.BackgroundColor3 = Color3.fromRGB(80,120,150)
-btnGet.TextColor3 = Color3.new(1,1,1)
-btnGet.BorderSizePixel = 0
+btnGet.Size = UDim2.new(0.42,0,0,38)
+btnGet.Position = UDim2.new(0.05,0,0.6,0)
+btnGet.Text = "🔗 Get Key"
+btnGet.BackgroundColor3 = Color3.fromRGB(255,140,180)
 
--- ===== GET KEY =====
+local btnLoad = Instance.new("TextButton", frame)
+btnLoad.Size = UDim2.new(0.42,0,0,38)
+btnLoad.Position = UDim2.new(0.53,0,0.6,0)
+btnLoad.Text = "✅ Load Hub"
+btnLoad.BackgroundColor3 = Color3.fromRGB(180,120,255)
+
 btnGet.MouseButton1Click:Connect(function()
-    setclipboard(https://link-center.net/3005759/rml6R6kJW5Tc)
-    status.Text = "🔗 Link copied! Open browser"
+    setclipboard(KEY_LINK)
+    btnGet.Text = "📋 Đã copy link"
 end)
-
--- ===== LOAD =====
-local function loadHub()
-    local src = game:HttpGet(HUB_URL)
-    loadstring(src)()
-    gui:Destroy()
-end
 
 btnLoad.MouseButton1Click:Connect(function()
     local key = box.Text
-
     if VALID_KEYS[key] then
         saveKey(key)
-        status.Text = "✅ Key valid! Loading..."
-        task.wait(0.5)
-        loadHub()
+        gui:Destroy()
+        loadstring(game:HttpGet(
+          "https://raw.githubusercontent.com/SakuraChann268/SakuraHub/refs/heads/main/SakuraHubs.lua"
+        ))()
     else
-        status.Text = "❌ Invalid key"
+        btnLoad.Text = "❌ Sai key"
     end
 end)
 
--- ===== AUTO LOAD SAVED KEY =====
-local saved = loadSavedKey()
+-- AUTO LOAD KEY
+local saved = loadKey()
 if saved and VALID_KEYS[saved] then
-    status.Text = "🔓 Key saved! Loading..."
-    task.wait(0.6)
-    loadHub()
+    gui:Destroy()
+    loadstring(game:HttpGet(
+      "https://raw.githubusercontent.com/SakuraChann268/SakuraHub/refs/heads/main/SakuraHubs.lua"
+    ))()
 end
