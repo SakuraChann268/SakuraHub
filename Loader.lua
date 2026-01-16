@@ -1,94 +1,74 @@
--- 🌸 Sakura Hub Loader | Money Version
--- Delta Compatible
+-- Sakura Hub | PRO Loader 👑
+-- Delta / Mobile / PC OK
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local plr = Players.LocalPlayer
 
 -- ===== CONFIG =====
-local KEY_LINK = "https://linkvertise.com/3005759/rml6R6kJW5Tc"
-local VALID_KEYS = {
-    ["SAKURA-61062162"] = true
-}
+local HUB_RAW = "https://raw.githubusercontent.com/SakuraChann268/SakuraHub/main/SakuraHub.lua"
+local SAVE_FILE = "SakuraHub_Key.json"
+local VALID_KEY = "SAKURA-61062162" -- đổi khi cần
+-- ==================
 
-local SAVE_FILE = "SakuraHub/key.json"
-
--- ===== SAVE / LOAD KEY =====
-pcall(function()
-    if not isfolder("SakuraHub") then makefolder("SakuraHub") end
-end)
-
-local function saveKey(k)
-    writefile(SAVE_FILE, HttpService:JSONEncode({key=k}))
+-- ===== SAVE KEY LOCAL =====
+local function saveKey(key)
+    if writefile then
+        writefile(SAVE_FILE, HttpService:JSONEncode({
+            key = key,
+            uid = plr.UserId
+        }))
+    end
 end
 
 local function loadKey()
-    if isfile(SAVE_FILE) then
-        return HttpService:JSONDecode(readfile(SAVE_FILE)).key
+    if readfile and isfile and isfile(SAVE_FILE) then
+        local ok, data = pcall(function()
+            return HttpService:JSONDecode(readfile(SAVE_FILE))
+        end)
+        if ok and data and data.key == VALID_KEY and data.uid == plr.UserId then
+            return true
+        end
     end
+    return false
 end
 
--- ===== UI =====
+-- ===== UI GET KEY =====
 local gui = Instance.new("ScreenGui", plr.PlayerGui)
 gui.Name = "SakuraKeyUI"
-gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.fromScale(0.75,0.45)
-frame.Position = UDim2.fromScale(0.125,0.28)
-frame.BackgroundColor3 = Color3.fromRGB(25,25,35)
-frame.Active = true
-frame.Draggable = true
-
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1,0,0,40)
-title.Text = "🌸 Sakura Hub – Get Key"
-title.TextColor3 = Color3.fromRGB(255,150,190)
-title.BackgroundTransparency = 1
-title.TextSize = 20
+frame.Size = UDim2.fromScale(0.4,0.3)
+frame.Position = UDim2.fromScale(0.3,0.35)
+frame.BackgroundColor3 = Color3.fromRGB(30,30,40)
 
 local box = Instance.new("TextBox", frame)
-box.Size = UDim2.new(0.9,0,0,40)
-box.Position = UDim2.new(0.05,0,0.35,0)
-box.PlaceholderText = "Nhập KEY vào đây"
+box.Size = UDim2.new(0.8,0,0.25,0)
+box.Position = UDim2.new(0.1,0,0.3,0)
+box.PlaceholderText = "Nhập Key Sakura 🌸"
 box.Text = ""
-box.TextSize = 16
 
-local btnGet = Instance.new("TextButton", frame)
-btnGet.Size = UDim2.new(0.42,0,0,38)
-btnGet.Position = UDim2.new(0.05,0,0.6,0)
-btnGet.Text = "🔗 Get Key"
-btnGet.BackgroundColor3 = Color3.fromRGB(255,140,180)
+local btn = Instance.new("TextButton", frame)
+btn.Size = UDim2.new(0.5,0,0.25,0)
+btn.Position = UDim2.new(0.25,0,0.65,0)
+btn.Text = "VERIFY"
 
-local btnLoad = Instance.new("TextButton", frame)
-btnLoad.Size = UDim2.new(0.42,0,0,38)
-btnLoad.Position = UDim2.new(0.53,0,0.6,0)
-btnLoad.Text = "✅ Load Hub"
-btnLoad.BackgroundColor3 = Color3.fromRGB(180,120,255)
+-- ===== AUTO LOAD IF SAVED =====
+local function loadHub()
+    gui:Destroy()
+    loadstring(game:HttpGet(HUB_RAW, true))()
+end
 
-btnGet.MouseButton1Click:Connect(function()
-    setclipboard(KEY_LINK)
-    btnGet.Text = "📋 Đã copy link"
-end)
+if loadKey() then
+    loadHub()
+    return
+end
 
-btnLoad.MouseButton1Click:Connect(function()
-    local key = box.Text
-    if VALID_KEYS[key] then
-        saveKey(key)
-        gui:Destroy()
-        loadstring(game:HttpGet(
-          "https://raw.githubusercontent.com/SakuraChann268/SakuraHub/refs/heads/main/SakuraHubs.lua"
-        ))()
+btn.MouseButton1Click:Connect(function()
+    if box.Text == VALID_KEY then
+        saveKey(box.Text)
+        loadHub()
     else
-        btnLoad.Text = "❌ Sai key"
+        box.Text = "SAI KEY ❌"
     end
 end)
-
--- AUTO LOAD KEY
-local saved = loadKey()
-if saved and VALID_KEYS[saved] then
-    gui:Destroy()
-    loadstring(game:HttpGet(
-      "https://raw.githubusercontent.com/SakuraChann268/SakuraHub/refs/heads/main/SakuraHubs.lua"
-    ))()
-end
