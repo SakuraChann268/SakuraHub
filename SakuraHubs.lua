@@ -1,3 +1,50 @@
+-- 🌸 Sakura Hub | LOCAL Statistics (Delta OK)
+
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
+
+local FILE_NAME = "SakuraHub_LocalStats.json"
+local startTime = os.time()
+
+-- Load stats
+local stats = {
+    UserId = LP.UserId,
+    Username = LP.Name,
+    Executor = identifyexecutor and identifyexecutor() or "Unknown",
+    LaunchCount = 0,
+    TotalTime = 0,
+    LastOpen = "Never"
+}
+
+if isfile(FILE_NAME) then
+    local ok, data = pcall(function()
+        return HttpService:JSONDecode(readfile(FILE_NAME))
+    end)
+    if ok and type(data) == "table" then
+        stats = data
+    end
+end
+
+-- Update stats
+stats.LaunchCount += 1
+stats.LastOpen = os.date("%Y-%m-%d %H:%M:%S")
+
+-- Save on close
+local function saveStats()
+    stats.TotalTime += os.time() - startTime
+    writefile(FILE_NAME, HttpService:JSONEncode(stats))
+end
+
+game:BindToClose(saveStats)
+
+-- Auto save mỗi 60s
+task.spawn(function()
+    while task.wait(60) do
+        saveStats()
+    end
+end)
+
 -- 🌸 Sakura Hub | UI Lunar – Stable Build
 
 local Library = loadstring(game:HttpGet(
