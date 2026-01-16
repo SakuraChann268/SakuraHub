@@ -97,7 +97,7 @@ btnGet.BorderSizePixel = 0
 
 -- ===== GET KEY =====
 btnGet.MouseButton1Click:Connect(function()
-    setclipboard(GET_KEY_URL)
+    setclipboard(https://link-center.net/3005759/rml6R6kJW5Tc)
     status.Text = "🔗 Link copied! Open browser"
 end)
 
